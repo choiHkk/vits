@@ -23,7 +23,7 @@
 2. `docker build --tag vits:latest .`
 
 ## Training
-1. `nvidia-docker run -it -n 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
+1. `nvidia-docker run -it --name 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
 2. `cd /home/work/vits/monotonic_align`
 3. `python setup.py build_ext --inplace`
 4. `cd /home/work/vits`
