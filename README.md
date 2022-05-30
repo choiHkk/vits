@@ -16,7 +16,6 @@
 2. `unzip /path/to/the/kss.zip -d /path/to/the/kss`
 3. `mkdir /path/to/the/vits/data/dataset`
 4. `mv /path/to/the/kss.zip /path/to/the/vits/data/dataset`
-5. `cd /path/to/the/vits/data/dataset`
 
 ## Docker build
 1. `cd /path/to/the/vits`
