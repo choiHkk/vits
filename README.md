@@ -24,8 +24,9 @@
 ## Training
 1. `nvidia-docker run -it -n 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
 2. `cd /home/work/vits`
-3. `python train.py -c ./config/kss_base.json -m kss_v1`
-4. arguments
+3. `ln -s /path/to/the/vits/data/dataset/kss`
+4. `python train.py -c ./config/kss_base.json -m kss_v1`
+5. arguments
   * -c : comfig path
   * -m : model output directory
-5. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
+6. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
