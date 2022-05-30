@@ -7,7 +7,8 @@
 6. stft_loss.py 를 추가하고 models.py SynthesizerTrn 부분 speaker embedding if문 일부를 수정했습니다.
 7. conda 환경으로 진행해도 무방하지만 본 레포지토리에서는 docker 환경만 제공합니다. 기본적으로 ubuntu에 docker, nvidia-docker가 설치되었다고 가정합니다.
 8. GPU, CUDA 종류에 따라 Dockerfile 상단 torch image 수정이 필요할 수도 있습니다.
-9. 별도의 pre-processing 과정은 필요하지 않습니다.
+9. 오픈소스에서 제공하는 영어 문장은 국제음성기호(ipa)를 사용하지만 본 레포지토리에서는 일반적인 한국어 전처리 기법을 사용합니다.
+10. 별도의 pre-processing 과정은 필요하지 않습니다.
 
 
 ## Dataset
@@ -24,9 +25,11 @@
 ## Training
 1. `nvidia-docker run -it -n 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
 2. `cd /home/work/vits`
-3. `ln -s /path/to/the/vits/data/dataset/kss`
-4. `python train.py -c ./config/kss_base.json -m kss_v1`
-5. arguments
+3. `cd monotonic_align`
+4. `python setup.py build_ext --inplace`
+5. `ln -s /path/to/the/vits/data/dataset/kss`
+6. `python train.py -c ./config/kss_base.json -m kss_v1`
+7. arguments
   * -c : comfig path
   * -m : model output directory
-6. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
+8. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
