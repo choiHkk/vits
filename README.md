@@ -24,9 +24,9 @@
 
 ## Training
 1. `nvidia-docker run -it -n 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
-2. `cd /home/work/vits`
-3. `cd monotonic_align`
-4. `python setup.py build_ext --inplace`
+2. `cd /home/work/vits/monotonic_align`
+3. `python setup.py build_ext --inplace`
+4. `cd /home/work/vits`
 5. `ln -s /path/to/the/vits/data/dataset/kss`
 6. `python train.py -c ./config/kss_base.json -m kss_v1`
 7. arguments
