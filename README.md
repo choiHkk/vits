@@ -27,7 +27,7 @@
 3. `python setup.py build_ext --inplace`
 4. `cd /home/work/vits`
 5. `ln -s /path/to/the/vits/data/dataset/kss`
-6. `python train.py -c ./config/kss_base.json -m kss_v1`
+6. `python train_ms.py -c ./config/kss_base.json -m kss_v1`
 7. arguments
   * -c : comfig path
   * -m : model output directory
