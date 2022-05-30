@@ -1,58 +1,31 @@
-# VITS: Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech
-
-### Jaehyeon Kim, Jungil Kong, and Juhee Son
-
-In our recent [paper](https://arxiv.org/abs/2106.06103), we propose VITS: Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech.
-
-Several recent end-to-end text-to-speech (TTS) models enabling single-stage training and parallel sampling have been proposed, but their sample quality does not match that of two-stage TTS systems. In this work, we present a parallel end-to-end TTS method that generates more natural sounding audio than current two-stage models. Our method adopts variational inference augmented with normalizing flows and an adversarial training process, which improves the expressive power of generative modeling. We also propose a stochastic duration predictor to synthesize speech with diverse rhythms from input text. With the uncertainty modeling over latent variables and the stochastic duration predictor, our method expresses the natural one-to-many relationship in which a text input can be spoken in multiple ways with different pitches and rhythms. A subjective human evaluation (mean opinion score, or MOS) on the LJ Speech, a single speaker dataset, shows that our method outperforms the best publicly available TTS systems and achieves a MOS comparable to ground truth.
-
-Visit our [demo](https://jaywalnut310.github.io/vits-demo/index.html) for audio samples.
-
-We also provide the [pretrained models](https://drive.google.com/drive/folders/1ksarh-cJf3F5eKJjLVWY0X1j1qsQqiS2?usp=sharing).
-
-** Update note: Thanks to [Rishikesh (ऋषिकेश)](https://github.com/jaywalnut310/vits/issues/1), our interactive TTS demo is now available on [Colab Notebook](https://colab.research.google.com/drive/1CO61pZizDj7en71NQG_aqqKdGaA_SaBf?usp=sharing).
-
-<table style="width:100%">
-  <tr>
-    <th>VITS at training</th>
-    <th>VITS at inference</th>
-  </tr>
-  <tr>
-    <td><img src="resources/fig_1a.png" alt="VITS at training" height="400"></td>
-    <td><img src="resources/fig_1b.png" alt="VITS at inference" height="400"></td>
-  </tr>
-</table>
+## Introduction
+1. vits 오픈 소스와 한국어 데이터셋(KSS)을 사용해 빠르게 학습합니다.
+2. KSS 데이터셋은 기본적으로 44kHz인 점을 감안하여 22kHz로 resampling할 수 있도록 utils.load_wav_to_torch()를 수정했습니다.
+3. data_utils.py 내부 get_audio method에는 spectrogram을 생성하고 저장한 뒤 다시 읽어오게끔 하는 부분이 있지만 해당 부분을 주석처리했습니다.
+4. data_utils.py 내부 get_text method를 kss 스크립트에 맞추어 변경했습니다.
+5. utils.py 내부 load_filepaths_and_text func. 를 data_utils.py 입력 형식에 맞게끔 수정했습니다.
+6. stft_loss.py 를 추가하고 models.py SynthesizerTrn 부분 speaker embedding if문 일부를 수정했습니다.
+7. conda 환경으로 진행해도 무방하지만 본 레포지토리에서는 docker 환경만 제공합니다. 기본적으로 ubuntu에 docker, nvidia-docker가 설치되었다고 가정합니다.
+8. GPU, CUDA 종류에 따라 Dockerfile 상단 torch image 수정이 필요할 수도 있습니다.
+9. 별도의 pre-processing 과정은 필요하지 않습니다.
 
 
-## Pre-requisites
-0. Python >= 3.6
-0. Clone this repository
-0. Install python requirements. Please refer [requirements.txt](requirements.txt)
-    1. You may need to install espeak first: `apt-get install espeak`
-0. Download datasets
-    1. Download and extract the LJ Speech dataset, then rename or create a link to the dataset folder: `ln -s /path/to/LJSpeech-1.1/wavs DUMMY1`
-    1. For mult-speaker setting, download and extract the VCTK dataset, and downsample wav files to 22050 Hz. Then rename or create a link to the dataset folder: `ln -s /path/to/VCTK-Corpus/downsampled_wavs DUMMY2`
-0. Build Monotonic Alignment Search and run preprocessing if you use your own datasets.
-```sh
-# Cython-version Monotonoic Alignment Search
-cd monotonic_align
-python setup.py build_ext --inplace
+## Dataset
+1. download dataset - https://www.kaggle.com/datasets/bryanpark/korean-single-speaker-speech-dataset
+2. `unzip /path/to/the/kss.zip -d /path/to/the/kss`
+3. `mkdir /path/to/the/vits/data/dataset`
+4. `mv /path/to/the/kss.zip /path/to/the/vits/data/dataset`
+5. `cd /path/to/the/vits/data/dataset`
 
-# Preprocessing (g2p) for your own datasets. Preprocessed phonemes for LJ Speech and VCTK have been already provided.
-# python preprocess.py --text_index 1 --filelists filelists/ljs_audio_text_train_filelist.txt filelists/ljs_audio_text_val_filelist.txt filelists/ljs_audio_text_test_filelist.txt 
-# python preprocess.py --text_index 2 --filelists filelists/vctk_audio_sid_text_train_filelist.txt filelists/vctk_audio_sid_text_val_filelist.txt filelists/vctk_audio_sid_text_test_filelist.txt
-```
+## Docker build
+1. `cd /path/to/the/vits`
+2. `docker build --tag vits:latest .`
 
-
-## Training Exmaple
-```sh
-# LJ Speech
-python train.py -c configs/ljs_base.json -m ljs_base
-
-# VCTK
-python train_ms.py -c configs/vctk_base.json -m vctk_base
-```
-
-
-## Inference Example
-See [inference.ipynb](inference.ipynb)
+## Training
+1. `nvidia-docker run -it -n 'vits' -v /path/to/vits:/home/work/vits --ipc=host --privileged vits:latest`
+2. `cd /home/work/vits`
+3. `python train.py -c ./config/kss_base.json -m kss_v1`
+4. arguments
+  * -c : comfig path
+  * -m : model output directory
+5. (OPTIONAL) `tensorboard --logdir=outdir/logdir`
